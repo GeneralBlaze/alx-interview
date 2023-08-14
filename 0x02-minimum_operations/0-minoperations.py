@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-    This method returns the min number of operations 
+    This method returns the min number of operations
     needed to result in n H characters in the file.
 """
 
