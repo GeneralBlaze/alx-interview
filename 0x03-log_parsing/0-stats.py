@@ -1,62 +1,45 @@
 #!/usr/bin/python3
+
+"""Script that reads stdin line by line and computes metrics"""
+
 import sys
 
-# Initialize variables
-total_size = 0
-status_code_counts = {}
+
+def printsts(dic, size):
+    """ WWPrints information """
+    print("File size: {:d}".format(size))
+    for i in sorted(dic.keys()):
+        if dic[i] != 0:
+            print("{}: {:d}".format(i, dic[i]))
+
+
+sts = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0,
+       "404": 0, "405": 0, "500": 0}
+
+count = 0
+size = 0
 
 try:
-    line_count = 0
     for line in sys.stdin:
-        line = line.strip()
+        if count != 0 and count % 10 == 0:
+            printsts(sts, size)
 
-        # Split line into parts using spaces
-        parts = line.split()
+        stlist = line.split()
+        count += 1
 
-        # Validate parts length
-        if len(parts) >= 8:
-            # Extract status code
-            status_code = parts[-2]
-            status_code = status_code.strip('"')  # Remove surrounding double quotes
+        try:
+            size += int(stlist[-1])
+        except:
+            pass
 
-            # Update status code counts
-            if status_code.isdigit():
-                status_code = int(status_code)
-                if status_code in (200, 301, 400, 401, 403, 404, 405, 500):
-                    status_code_counts[status_code] = status_code_counts.get(status_code, 0) + 1
+        try:
+            if stlist[-2] in sts:
+                sts[stlist[-2]] += 1
+        except:
+            pass
+    printsts(sts, size)
 
-            # Process file size
-            file_size_part = parts[-1]
-            numeric_size = ""
-            unit = ""
-            for char in file_size_part:
-                if char.isdigit():
-                    numeric_size += char
-                else:
-                    unit += char
-            numeric_size = int(numeric_size)
-            unit = unit.lower()
-            if unit == "kb":
-                file_size = numeric_size * 1024  # Convert kb to bytes
-            elif unit == "mb":
-                file_size = numeric_size * 1024 * 1024  # Convert mb to bytes
-            else:
-                file_size = numeric_size  # Default to bytes
-
-            # Update total file size
-            total_size += file_size
-
-            line_count += 1
-
-            # Print statistics every 10 lines
-            if line_count % 10 == 0:
-                print("Total file size:", total_size)
-                for status_code in sorted(status_code_counts):
-                    print("{}: {}".format(status_code, status_code_counts[status_code]))
 
 except KeyboardInterrupt:
-    print("Total file size:", total_size)
-    for status_code in sorted(status_code_counts):
-        print("{}: {}".format(status_code, status_code_counts[status_code]))
-    sys.exit(0)
-
+    printsts(sts, size)
+    raise
