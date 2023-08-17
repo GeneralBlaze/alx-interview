@@ -1,0 +1,1 @@
+Log parsing from a php input
