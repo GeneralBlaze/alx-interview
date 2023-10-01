@@ -2,6 +2,7 @@
 """
 Island Perimeter:
     returns the perimeter of the island described in grid
+    of given values
 """
 
 
